@@ -1,0 +1,65 @@
+.NodeContainer{
+	display: flex;
+	flex-direction: column;
+	width: fit-content;
+	/*padding: 0 0 0 1rem;*/
+	margin-left: 1.3rem;
+	/*border-left: var(--border-width) solid var(--border-color);*/
+
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	user-select: none;
+
+}
+.NodeContainer:last-child{
+	.NodeConnectionVerticalLine{
+		height: 50%;
+	}
+}
+.NodeHandler{
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	gap:0;
+}
+.NodeConnectionVerticalLine{
+	display: flex;
+	margin-bottom: auto;
+	position: relative;
+	width: 2px;
+	height: 100%;
+	background-color: var(--border-color);
+}
+.NodeConnectionHorizontalLine{
+	display: flex;
+	width: 1rem;
+	height: 2px;
+	margin-left: -2px;
+	background-color: var(--border-color);
+}
+.NodeText{
+
+	padding: 0.3rem;
+
+	font-family: "RalewayRegular";
+	font-size: var(--base-font-size);
+	font-weight: var(--base-font-weight);
+	font-variant-numeric: lining-nums;
+	letter-spacing: 0.05rem;
+
+	cursor: pointer;
+
+	color: var(--text-color);
+
+	transition: background-color 0.3s ease;
+}
+.NodeText:hover{
+	background-color: rgba(135, 139, 130, 0.281);
+}
+.NodeText:active{
+	background-color: rgba(109, 112, 105, 0.322);
+}
+
+.NodeText.Selected{
+	background-color: rgba(135, 139, 130, 0.281);
+}
