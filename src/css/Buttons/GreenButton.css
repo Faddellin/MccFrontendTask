@@ -1,0 +1,39 @@
+.GreenButtonContainer{
+
+	--button-active-color: rgb(74, 146, 60);
+
+	padding: 0.2rem 0.5rem;
+
+	cursor: pointer;
+	white-space: nowrap;
+
+	background-color: var(--background-page-color);
+	border: var(--border-width) solid var(--border-color);
+
+	font-family: "RalewayRegular";
+	font-size: var(--base-font-size);
+	font-weight: var(--base-font-weight);
+
+	letter-spacing: 0.05rem;
+
+	color: var(--text-color);
+
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	user-select: none;
+
+	transition: 
+		background-color 0.3s ease,
+		color 0.3s ease,
+		border 0.3s ease;
+}
+.GreenButtonContainer:hover{
+	background-color: var(--text-color);
+	color: var(--background-page-color);
+}
+
+.GreenButtonContainer:active{
+	color: var(--background-page-color);
+	background-color: var(--button-active-color);
+	border: var(--border-width) solid var(--button-active-color);
+}

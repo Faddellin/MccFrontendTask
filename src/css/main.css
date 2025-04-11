@@ -1,0 +1,28 @@
+@import "TextInputs/TextInput.css";
+@import "Buttons/GreenButton.css";
+@import "Pages/MainPage.css";
+@import "Tree.css";
+@import "Node.css";
+
+* {
+
+	--base-font-size: 1.3rem;
+	--small-font-size: 1.1rem;
+	--base-font-weight: 600;
+	--text-color: rgb(77, 161, 60);
+	--border-color: rgb(77, 161, 60);
+	
+	--background-page-color: rgb(247, 255, 240);
+	--border-width: 2px;
+
+	padding: 0;
+	margin: 0;
+}
+
+@font-face {
+	font-family: "RalewayRegular";
+
+	src: url("../fonts/Raleway-Regular.ttf") format("truetype");
+	font-style: normal;
+	font-weight: normal;
+}
