@@ -4,17 +4,18 @@
 	width: fit-content;
 	/*padding: 0 0 0 1rem;*/
 	margin-left: 1.3rem;
-	/*border-left: var(--border-width) solid var(--border-color);*/
-
+	
+	
 	-webkit-user-select: none;
 	-moz-user-select: none;
 	user-select: none;
 
 }
-.NodeContainer:last-child{
-	.NodeConnectionVerticalLine{
-		height: 50%;
-	}
+.NodeContainer:not(:last-child){
+	border-left: var(--border-width) solid var(--border-color);
+}
+.NodeContainer:last-child > .NodeHandler .NodeConnectionVerticalLine{
+	height: 50%;
 }
 .NodeHandler{
 	display: flex;
@@ -27,7 +28,7 @@
 	margin-bottom: auto;
 	position: relative;
 	width: 2px;
-	height: 100%;
+	height: 0%;
 	background-color: var(--border-color);
 }
 .NodeConnectionHorizontalLine{

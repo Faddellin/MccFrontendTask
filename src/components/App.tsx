@@ -1,8 +1,13 @@
-import React from "react"
+import React, { useState } from "react"
 
 import GreenButtonC from "./Buttons/GreenButtonC";
-import NodeC from "./Node";
+import NodeC from "./NodeC";
 import { Node } from "../models/Node/Node";
+import { TreeLogicProvider } from "../providers/TreeLogicProvider";
+import { useTreeLogic } from "../hooks/useTreeLogic";
+import { memo } from "react";
+import TreeC from "./TreeC";
+
 
 interface AppProps{
 
@@ -12,7 +17,9 @@ const App: React.FC<AppProps> =
 
 	}) => {
 
-	let listOfNodes : Array<Node> = [{id:0,name:"1",arrayOfChilds:[{id:2,name:"3",arrayOfChilds:[]},{id:4,name:"5",arrayOfChilds:[]}]},{id:1,name:"2",arrayOfChilds:[{id:3,name:"4",arrayOfChilds:[]}]}]
+	const {createNode, removeNode, resetTree, editNode, clearSelect} = useTreeLogic();
+
+	const [editButtonText, setEditButtonText] = useState<string>("Edit");
 
 	return (
 		<div className="MainPage">
@@ -20,16 +27,17 @@ const App: React.FC<AppProps> =
 				<div className="TreeHeader">
 					<span>Tree</span>
 				</div>
+				
 				<div className="Tree">
-					{listOfNodes.map(child => 
-						<NodeC key={child.id} nodeP={child}/>
-					)}
+					<TreeC/>
 				</div>
+				
 				<div className="TreeWorkingArea">
-					<GreenButtonC buttonTextP="Add" onClickP={() => console.log("ckecj")}></GreenButtonC>
-					<GreenButtonC buttonTextP="Remove" onClickP={() => console.log("ckecj")}></GreenButtonC>
-					<GreenButtonC buttonTextP="Edit" onClickP={() => console.log("ckecj")}></GreenButtonC>
-					<GreenButtonC buttonTextP="Reset" onClickP={() => console.log("ckecj")}></GreenButtonC>
+					<GreenButtonC buttonTextP="Add" onClickP={createNode}></GreenButtonC>
+					<GreenButtonC buttonTextP="Remove" onClickP={removeNode}></GreenButtonC>
+					<GreenButtonC buttonTextP={editButtonText} onClickP={() => editNode(setEditButtonText)}></GreenButtonC>
+					<GreenButtonC buttonTextP="Reset" onClickP={resetTree}></GreenButtonC>
+					<GreenButtonC buttonTextP="Clear select" onClickP={clearSelect}></GreenButtonC>
 				</div>
 			</div>
 		</div>

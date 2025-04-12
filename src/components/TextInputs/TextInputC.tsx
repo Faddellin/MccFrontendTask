@@ -1,16 +1,12 @@
 import React from "react";
 
 interface TextInputProps{
-	placeHolderP: string;
-	labelTextP: string;
 	inputTextP?: string;
 	setParentValueFromInputP: (inputValue: string) => void
 }
 
 const TextInputC: React.FC<TextInputProps> = 
 	({
-		placeHolderP,
-		labelTextP,
 		inputTextP,
 		setParentValueFromInputP
 	}) => {
@@ -23,14 +19,9 @@ const TextInputC: React.FC<TextInputProps> =
 
 	return(
 		<div className="TextInputContainer">
-			<div className="TextInputField">
-				<div className="TextInputStateLayer">
-					<label id="Label" className="TextInputLabel">{labelTextP}</label>
-					<input className="TextInput" placeholder={placeHolderP} value={inputText}
-						onChange={changeInputText}>
-					</input>
-				</div>
-			</div>
+			<input id="TextInput" className="TextInput" value={inputText} autoFocus={true}
+				onChange={changeInputText}>
+			</input>
 		</div>
 	);
 }
