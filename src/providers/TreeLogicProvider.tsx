@@ -8,7 +8,8 @@ interface TreeLogicContextType {
 	createNode: () => void;
 	removeNode: () => void;
 	resetTree: () => void;
-	editNode: (setEditButtonText: React.Dispatch<React.SetStateAction<string>>) => void;
+	editNode: () => void;
+	assignEditButtonTextState: (setEditButtonText: Dispatch<SetStateAction<string>>) => void;
 	clearSelect: () => void;
 	arrayOfNodes: Array<Node>;
 }
@@ -20,12 +21,11 @@ export const TreeLogicProvider = ({ children }: { children: ReactNode }) => {
 	const currentNodeId = useRef<number>(0);
 	const currentNode = useRef<Node>(null);
 
-	const currentNodeFunctionToUnselect = useRef<(isSelected: boolean) => void>(null);
-	const currentNodeFunctionToEdit = useRef<(isEditing: boolean) => void>(null);
+	const currentNodeFunctionToUnselect = useRef<Dispatch<SetStateAction<boolean>>>(null);
+	const currentNodeFunctionToEdit = useRef<Dispatch<SetStateAction<boolean>>>(null);
 	const currentNodeIsEditing = useRef<boolean>(false);
-	
 
-
+	const setEditButtonText = useRef<Dispatch<SetStateAction<string>>>(null);
 
 	const createNode = useCallback(() => {
 		const newNode: Node =
@@ -113,24 +113,35 @@ export const TreeLogicProvider = ({ children }: { children: ReactNode }) => {
 		if(currentNodeFunctionToUnselect.current != null){
 			currentNodeFunctionToUnselect.current(false);
 		}
+		if(currentNodeFunctionToEdit.current != null){
+			currentNodeFunctionToEdit.current(false);
+			setEditButtonText.current!!("Edit");
+		}
 		currentNodeFunctionToUnselect.current = nodeFunctionToUnselect;
 		currentNode.current = node;
 		currentNodeFunctionToEdit.current = nodeFunctionToEdit;
 		currentNodeIsEditing.current = isEditing;
 	}
 
-	const editNode = (setEditButtonText: React.Dispatch<React.SetStateAction<string>>) =>{
-		if(currentNodeFunctionToEdit.current != null){
-			currentNodeIsEditing.current = !currentNodeIsEditing.current;
-			currentNodeFunctionToEdit.current(currentNodeIsEditing.current);
-			
-			if (currentNodeIsEditing.current == true){
-				setEditButtonText("Cancel");
-			}else{
-				setEditButtonText("Edit");
-			}
-
+	const editNode = () =>{
+		if (setEditButtonText.current == null){
+			return;
 		}
+		if(currentNodeFunctionToEdit.current == null){
+			return;
+		}
+		currentNodeIsEditing.current = !currentNodeIsEditing.current;
+		currentNodeFunctionToEdit.current(currentNodeIsEditing.current);
+		
+		if (currentNodeIsEditing.current == true){
+			setEditButtonText.current("Cancel");
+		}else{
+			setEditButtonText.current("Edit");
+		}
+	}
+
+	const assignEditButtonTextState = (editButtonTextState: Dispatch<SetStateAction<string>>) =>{
+		setEditButtonText.current = editButtonTextState;
 	}
 
 	const clearSelect = () =>{
@@ -140,6 +151,7 @@ export const TreeLogicProvider = ({ children }: { children: ReactNode }) => {
 		}
 		if(currentNodeFunctionToEdit.current != null){
 			currentNodeFunctionToEdit.current(false);
+			setEditButtonText.current!!("Edit");
 		}
 
 		currentNodeFunctionToUnselect.current = null;
@@ -154,6 +166,7 @@ export const TreeLogicProvider = ({ children }: { children: ReactNode }) => {
 		removeNode,
 		resetTree,
 		editNode,
+		assignEditButtonTextState,
 		clearSelect,
 		arrayOfNodes
 	};

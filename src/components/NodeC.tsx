@@ -34,11 +34,11 @@ const NodeC: React.FC<NodeProps> = memo(
 				<div className="NodeConnectionVerticalLine"></div>
 				<div className="NodeConnectionHorizontalLine"></div>
 				
-				<div className={"NodeText" + (isSelected ? " Selected" : "")} >
+				<div className={"NodeText" + (isSelected ? " Selected" : "")} onClick={onNodeClick} >
 					
 					{
 						isEditing ? <TextInputC inputTextP={nodeP.name} setParentValueFromInputP={onNodeNameEdit}/> :
-						<span onClick={onNodeClick}>{nodeP.name}</span>
+						<span>{nodeP.name}</span>
 					}
 				</div>
 			</div>

@@ -17,9 +17,11 @@ const App: React.FC<AppProps> =
 
 	}) => {
 
-	const {createNode, removeNode, resetTree, editNode, clearSelect} = useTreeLogic();
+	const {createNode, removeNode, resetTree, editNode, clearSelect, assignEditButtonTextState} = useTreeLogic();
 
 	const [editButtonText, setEditButtonText] = useState<string>("Edit");
+
+	assignEditButtonTextState(setEditButtonText);
 
 	return (
 		<div className="MainPage">
@@ -35,7 +37,7 @@ const App: React.FC<AppProps> =
 				<div className="TreeWorkingArea">
 					<GreenButtonC buttonTextP="Add" onClickP={createNode}></GreenButtonC>
 					<GreenButtonC buttonTextP="Remove" onClickP={removeNode}></GreenButtonC>
-					<GreenButtonC buttonTextP={editButtonText} onClickP={() => editNode(setEditButtonText)}></GreenButtonC>
+					<GreenButtonC buttonTextP={editButtonText} onClickP={editNode}></GreenButtonC>
 					<GreenButtonC buttonTextP="Reset" onClickP={resetTree}></GreenButtonC>
 					<GreenButtonC buttonTextP="Clear select" onClickP={clearSelect}></GreenButtonC>
 				</div>
