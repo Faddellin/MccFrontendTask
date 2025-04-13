@@ -25,6 +25,7 @@
 	border-right: var(--border-width) solid var(--border-color);
 	border-left: var(--border-width) solid var(--border-color);
 }
+
 ::-webkit-scrollbar { width: var(--border-width); height: var(--border-width);}
 ::-webkit-scrollbar-button { height: 0px; width: 0px;}
 ::-webkit-scrollbar-thumb {background-color: var(--scroll-bar-color);}
@@ -35,9 +36,8 @@
 	box-sizing: border-box;
 
 	padding: 0.5rem;
-	min-height: 30vh;
-	height: 45vh;
-	max-height: 60vh;
+	min-height: 10rem;
+	height: 60vh;
 
 	width: 100%;
 

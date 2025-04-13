@@ -10,7 +10,6 @@ const NodeC: React.FC<NodeProps> = memo(
 	({
 		nodeP
 	}) => {
-	console.log(nodeP.name);
 
 	const [isSelected, setIsSelected] = useState<boolean>(false);
 	const [isEditing, setIsEditing] = useState<boolean>(false);

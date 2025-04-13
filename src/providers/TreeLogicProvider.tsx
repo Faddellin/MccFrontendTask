@@ -3,8 +3,8 @@ import { Dispatch, SetStateAction } from "react";
 import { Node } from "../models/Node/Node";
 
 interface TreeLogicContextType {
-	makeNewNodeSelected: (node: Node, nodeFunctionToUnselect: Dispatch<SetStateAction<boolean>> | null,
-		isEditing: boolean, nodeFunctionToEdit: Dispatch<SetStateAction<boolean>> | null) => void;
+	makeNewNodeSelected: (node: Node, nodeSetIsSelected: Dispatch<SetStateAction<boolean>> | null,
+		isEditing: boolean, nodeSetIsEditing: Dispatch<SetStateAction<boolean>> | null) => void;
 	createNode: () => void;
 	removeNode: () => void;
 	resetTree: () => void;
@@ -18,22 +18,27 @@ const TreeLogicContext = createContext<TreeLogicContextType | undefined>(undefin
 
 export const TreeLogicProvider = ({ children }: { children: ReactNode }) => {
 	const [arrayOfNodes, setArrayOfNodes] = useState<Array<Node>>([]); 
-	const currentNodeId = useRef<number>(0);
+	const nodeIdSequence = useRef<number>(0);
 	const currentNode = useRef<Node>(null);
 
-	const currentNodeFunctionToUnselect = useRef<Dispatch<SetStateAction<boolean>>>(null);
-	const currentNodeFunctionToEdit = useRef<Dispatch<SetStateAction<boolean>>>(null);
+	const currentNodeSetIsSelected = useRef<Dispatch<SetStateAction<boolean>>>(null);
+	const currentNodeSetIsEditing = useRef<Dispatch<SetStateAction<boolean>>>(null);
 	const currentNodeIsEditing = useRef<boolean>(false);
 
 	const setEditButtonText = useRef<Dispatch<SetStateAction<string>>>(null);
 
-	const createNode = useCallback(() => {
+	const createNode = () => {
+
+		stopEditingIfEditing();
+
 		const newNode: Node =
-			{id: currentNodeId.current,
-			name: `Node${currentNodeId.current}`,
+			{id: nodeIdSequence.current,
+			name: `Node${nodeIdSequence.current}`,
 			arrayOfChilds: []};
 			
-		currentNodeId.current++;
+		nodeIdSequence.current++;
+
+		const parentNode: Node | null = currentNode.current;
 
 		setArrayOfNodes(oldNodes => {
 
@@ -41,14 +46,14 @@ export const TreeLogicProvider = ({ children }: { children: ReactNode }) => {
 				return [newNode];
 			}
 
-			if(currentNode.current == null){
+			if(parentNode == null){
 				return [...oldNodes, newNode];
 			}
 
 			const recursiveTreeUpdate = (childNodes: Array<Node>) : Array<Node> => {
 				return childNodes.map(node => {
 	
-					if(node.id == currentNode.current?.id){
+					if(node.id == parentNode?.id){
 						return {id:node.id, name:node.name, arrayOfChilds:[...node.arrayOfChilds, newNode]};
 					}
 	
@@ -64,24 +69,26 @@ export const TreeLogicProvider = ({ children }: { children: ReactNode }) => {
 			return recursiveTreeUpdate(oldNodes);
 		});
 
-	},[]);
+	};
 
 	const removeNode = () => {
-		setArrayOfNodes(oldNodes => {
 
+		const nodeToDelete: Node | null = currentNode.current;
+
+		stopEditingIfEditing();
+		unselectNodeIfSelected();
+
+		setArrayOfNodes(oldNodes => {
 			if (oldNodes.length == 0){
 				return [];
 			}
 
-			if(currentNode.current == null){
+			if(nodeToDelete == null){
 				return oldNodes;
 			}
-
 			const recursiveTreeDelete = (childNodes: Array<Node>) : Array<Node> => {
 				return childNodes.filter(node => {
-					console.log(node);
-					console.log(currentNode.current?.id);
-					if(node.id == currentNode.current?.id){
+					if(node.id == nodeToDelete?.id){
 						return false;
 					}
 	
@@ -93,33 +100,33 @@ export const TreeLogicProvider = ({ children }: { children: ReactNode }) => {
 	
 				});
 			}
-
 			return recursiveTreeDelete(oldNodes);
 		});
+
 		currentNode.current = null;
 	}
 
 	const resetTree = () => {
 		setArrayOfNodes([]); 
-		currentNodeId.current = 0;
+
+		stopEditingIfEditing();
+		unselectNodeIfSelected();
+
+		nodeIdSequence.current = 0;
 		currentNode.current = null;
-		currentNodeFunctionToUnselect.current = null;
+		currentNodeSetIsSelected.current = null;
 	}
 
-	const makeNewNodeSelected = (node: Node, nodeFunctionToUnselect: Dispatch<SetStateAction<boolean>> | null,
-		isEditing: boolean, nodeFunctionToEdit: Dispatch<SetStateAction<boolean>> | null
+	const makeNewNodeSelected = (node: Node, nodeSetIsSelected: Dispatch<SetStateAction<boolean>> | null,
+		isEditing: boolean, nodeSetIsEditing: Dispatch<SetStateAction<boolean>> | null
 	 ) => {
 
-		if(currentNodeFunctionToUnselect.current != null){
-			currentNodeFunctionToUnselect.current(false);
-		}
-		if(currentNodeFunctionToEdit.current != null){
-			currentNodeFunctionToEdit.current(false);
-			setEditButtonText.current!!("Edit");
-		}
-		currentNodeFunctionToUnselect.current = nodeFunctionToUnselect;
+		unselectNodeIfSelected();
+		stopEditingIfEditing();
+
+		currentNodeSetIsSelected.current = nodeSetIsSelected;
 		currentNode.current = node;
-		currentNodeFunctionToEdit.current = nodeFunctionToEdit;
+		currentNodeSetIsEditing.current = nodeSetIsEditing;
 		currentNodeIsEditing.current = isEditing;
 	}
 
@@ -127,14 +134,14 @@ export const TreeLogicProvider = ({ children }: { children: ReactNode }) => {
 		if (setEditButtonText.current == null){
 			return;
 		}
-		if(currentNodeFunctionToEdit.current == null){
+		if(currentNodeSetIsEditing.current == null){
 			return;
 		}
 		currentNodeIsEditing.current = !currentNodeIsEditing.current;
-		currentNodeFunctionToEdit.current(currentNodeIsEditing.current);
+		currentNodeSetIsEditing.current(currentNodeIsEditing.current);
 		
 		if (currentNodeIsEditing.current == true){
-			setEditButtonText.current("Cancel");
+			setEditButtonText.current("Apply");
 		}else{
 			setEditButtonText.current("Edit");
 		}
@@ -146,18 +153,27 @@ export const TreeLogicProvider = ({ children }: { children: ReactNode }) => {
 
 	const clearSelect = () =>{
 
-		if(currentNodeFunctionToUnselect.current != null){
-			currentNodeFunctionToUnselect.current(false);
-		}
-		if(currentNodeFunctionToEdit.current != null){
-			currentNodeFunctionToEdit.current(false);
-			setEditButtonText.current!!("Edit");
-		}
+		unselectNodeIfSelected();
+		stopEditingIfEditing();
 
-		currentNodeFunctionToUnselect.current = null;
+		currentNodeSetIsSelected.current = null;
 		currentNode.current = null;
-		currentNodeFunctionToEdit.current = null;
+		currentNodeSetIsEditing.current = null;
 		currentNodeIsEditing.current = false;
+	}
+
+	const stopEditingIfEditing = () => {
+		if(currentNodeSetIsEditing.current != null){
+			currentNodeSetIsEditing.current(false);
+			setEditButtonText.current!!("Edit");
+			currentNodeIsEditing.current = false;
+		}
+	}
+
+	const unselectNodeIfSelected = () => {
+		if(currentNodeSetIsSelected.current != null){
+			currentNodeSetIsSelected.current(false);
+		}
 	}
 
 	const value = {
@@ -172,9 +188,9 @@ export const TreeLogicProvider = ({ children }: { children: ReactNode }) => {
 	};
 
 	return (
-	  <TreeLogicContext.Provider value={value}>
-		{children}
-	  </TreeLogicContext.Provider>
+		<TreeLogicContext.Provider value={value}>
+			{children}
+		</TreeLogicContext.Provider>
 	);
 };
 
